@@ -1,0 +1,347 @@
+/* print.c -- formatted printing routines ($Revision: 1.1.1.1 $) */
+
+#include "es.hxx"
+#include "print.hxx"
+
+/* Should be the > than he the largest numerical value of any normal english character used for fmttab */
+/* So for ASCII-derived, 128 should work */
+#define	MAXCONV 128
+
+/*
+ * conversion functions
+ *	true return -> flag changes only, not a conversion
+ */
+
+#define	Flag(name, flag) \
+static bool name(Format *format) { \
+	format->flags |= flag; \
+	return true; \
+}
+
+Flag(uconv,	FMT_unsigned)
+Flag(hconv,	FMT_short)
+Flag(longconv,	FMT_long)
+Flag(altconv,	FMT_altform)
+Flag(leftconv,	FMT_leftside)
+Flag(dotconv,	FMT_f2set)
+
+static bool digitconv(Format *format) {
+	int c = format->invoker;
+	if (format->flags & FMT_f2set)
+		format->f2 = 10 * format->f2 + c - '0';
+	else {
+		format->flags |= FMT_f1set;
+		format->f1 = 10 * format->f1 + c - '0';
+	}
+	return true;
+}
+
+static bool zeroconv(Format *format) {
+	if (format->flags & (FMT_f1set | FMT_f2set))
+		return digitconv(format);
+	format->flags |= FMT_zeropad;
+	return true;
+}
+
+static void pad(Format *format, long len, int c) {
+	while (len-- > 0) format->put(c);
+}
+
+static bool sconv(Format *format) {
+	char *s = va_arg(format->args, char *);
+	if ((format->flags & FMT_f1set) == 0)
+		fmtcat(format, s);
+	else {
+		size_t len = strlen(s), width = format->f1 - len;
+		if (format->flags & FMT_leftside) {
+			format->append(s, len);
+			pad(format, width, ' ');
+		} else {
+			pad(format, width, ' ');
+			format->append(s, len);
+		}
+	}
+	return false;
+}
+
+char *utoa(unsigned long long u, char *t, unsigned int radix, const char *digit) {
+	if (u >= radix) {
+		t = utoa(u / radix, t, radix, digit);
+		u %= radix;
+	}
+	*t++ = digit[u];
+	return t;
+}
+
+static void intconv(Format *format, unsigned int radix, int upper, const char *altform) {
+	static const char * table[] = {
+		"0123456789abcdefghijklmnopqrstuvwxyz",
+		"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+	};
+	char padchar;
+	size_t len, pre, zeroes, padding, width;
+	long long n; 
+	long flags;
+	unsigned long long u;
+	char number[999], prefix[20];
+
+	if (radix > 36)
+		return;
+
+	flags = format->flags;
+	if (flags & FMT_long)
+		n = va_arg(format->args, long long);
+	else if (flags & FMT_short)
+		n = va_arg(format->args, int);
+	else
+		n = va_arg(format->args, int);
+
+	pre = 0;
+	if ((flags & FMT_unsigned) || n >= 0)
+		u = n;
+	else {
+		prefix[pre++] = '-';
+		u = -n;
+	}
+
+	if (flags & FMT_altform)
+		while (*altform != '\0')
+			prefix[pre++] = *altform++;
+
+	len = utoa(u, number, radix, table[upper]) - number;
+	if ((flags & FMT_f2set) && (size_t) format->f2 > len)
+		zeroes = format->f2 - len;
+	else
+		zeroes = 0;
+
+	width = pre + zeroes + len;
+	if ((flags & FMT_f1set) && (size_t) format->f1 > width) {
+		padding = format->f1 - width;
+	} else
+		padding = 0;
+
+	padchar = ' ';
+	if (padding > 0 && flags & FMT_zeropad) {
+		padchar = '0';
+		if ((flags & FMT_leftside) == 0) {
+			zeroes += padding;
+			padding = 0;
+		}
+	}
+
+	if ((flags & FMT_leftside) == 0)
+		pad(format, padding, padchar);
+	format->append(prefix, pre);
+	pad(format, zeroes, '0');
+	format->append(number, len);
+	if (flags & FMT_leftside)
+		pad(format, padding, padchar);
+}
+
+static bool cconv(Format *format) {
+	format->put(va_arg(format->args, int));
+	return false;
+}
+
+static bool dconv(Format *format) {
+	intconv(format, 10, 0, "");
+	return false;
+}
+
+static bool oconv(Format *format) {
+	intconv(format, 8, 0, "0");
+	return false;
+}
+
+static bool xconv(Format *format) {
+	intconv(format, 16, 0, "0x");
+	return false;
+}
+
+static bool pctconv(Format *format) {
+	format->put('%');
+	return false;
+}
+
+static bool badconv(Format *format) {
+	panic("bad conversion character in printfmt: %%%c", format->invoker);
+	NOTREACHED;
+}
+
+
+/*
+ * conversion table management
+ */
+
+static Conv *fmttab = NULL;
+
+static void inittab(void) {
+	int i;
+
+	fmttab = reinterpret_cast<Conv*>(ealloc(MAXCONV * sizeof (Conv)));
+	for (i = 0; i < MAXCONV; i++)
+		fmttab[i] = badconv;
+
+	fmttab['s'] = sconv;
+	fmttab['c'] = cconv;
+	fmttab['d'] = dconv;
+	fmttab['o'] = oconv;
+	fmttab['x'] = xconv;
+	fmttab['%'] = pctconv;
+
+	fmttab['u'] = uconv;
+	fmttab['h'] = hconv;
+	fmttab['l'] = longconv;
+	fmttab['#'] = altconv;
+	fmttab['-'] = leftconv;
+	fmttab['.'] = dotconv;
+
+	fmttab['0'] = zeroconv;
+	for (i = '1'; i <= '9'; i++)
+		fmttab[i] = digitconv;
+}
+
+Conv fmtinstall(int c, Conv f) {
+	Conv oldf;
+	if (fmttab == NULL)
+		inittab();
+	c &= MAXCONV - 1;
+	oldf = fmttab[c];
+	if (f != NULL)
+		fmttab[c] = f;
+	return oldf;
+}
+
+/*
+ * printfmt -- the driver routine
+ */
+
+extern int printfmt(Format *format, const char *fmt) {
+	unsigned char *s = (unsigned char *) fmt;
+
+	if (fmttab[0] == NULL)
+		inittab();
+
+	for (;;) {
+		int c = *s++;
+		switch (c) {
+		case '%':
+			format->flags = format->f1 = format->f2 = 0;
+			do
+				format->invoker = c = *s++;
+			while ((*fmttab[c])(format));
+			break;
+		case '\0':
+			return format->size() + format->flushed;
+		default:
+			format->put(c);
+			break;
+		}
+	}
+}
+
+
+/*
+ * the public entry points
+ */
+
+extern int fmtprint (Format * format,  const char * fmt, ...) {
+	int n = -format->flushed;
+	va_list saveargs;
+	va_copy(saveargs, format->args);
+
+
+	va_start(format->args, fmt);
+	n += printfmt(format, fmt);
+	va_end(format->args);
+
+	va_copy(format->args, saveargs);
+
+	return n + format->flushed;
+}
+
+struct FD_format : public Format {
+	char *buf, *bufbegin, *bufend;
+	int fd;
+	void put(char c) {
+		if (buf >= bufend)
+			grow(32);
+		*buf++ = c;
+	}
+	void append(const char *s, size_t len) {
+		while (buf + len > bufend) {
+			size_t split = bufend - buf;
+			memcpy(buf, s, split);
+			buf += split;
+			s += split;
+			len -= split;
+			grow(len);
+		}
+		memcpy(buf, s, len);
+		buf += len;
+	}
+	int size() const {
+		return buf - bufbegin;
+	}
+
+	void grow(size_t s) {
+		size_t n = buf - bufbegin;
+		char *obuf = bufbegin;
+	
+		flushed += n;
+		buf = bufbegin;
+		while (n != 0) {
+			int written = write(fd, obuf, n);
+			if (written == -1) {
+				if (fd != 2)
+					uerror("write");
+				exit(1);
+			}
+			n -= written;
+		}
+	}
+};
+
+static void fdprint(FD_format *format, int fd, const char *fmt) {
+	char buf[FPRINT_BUFSIZ];
+
+	format->buf	= buf;
+	format->bufbegin = buf;
+	format->bufend	= buf + sizeof buf;
+	format->flushed	= 0;
+	format->fd	= fdmap(fd);
+
+	
+	printfmt(format, fmt);
+	format->grow(0);
+	
+}
+
+#define FORMATPRINT(fd) FD_format format; \
+	va_start(format.args, fmt); \
+	fdprint(&format, fd, fmt); \
+	va_end(format.args); \
+	return format.flushed;
+
+extern int fprint (int fd,  const char * fmt, ...) {
+	FORMATPRINT(fd);
+}
+
+extern int print (const char * fmt, ...) {
+	FORMATPRINT(1);
+}
+
+extern int eprint (const char * fmt, ...) {
+	FORMATPRINT(2);
+}
+
+extern void panic (const char * fmt, ...) {
+	FD_format format;
+	
+	va_start(format.args, fmt);
+	eprint("es panic: ");
+	fdprint(&format, 2, fmt);
+	va_end(format.args);
+	eprint("\n");
+	exit(1);
+}
