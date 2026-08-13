@@ -24,6 +24,6 @@ elif [ "$1" = '--afl-gcc' ]; then
 	rm -rf build
 fi
 touch .build
-[ -d build ] || meson $meson_opts build
+[ -d build ] || meson setup $meson_opts build
 if [ $? -ne 0 ]; then false; else ninja -C build "$@"; fi
 rm -f .build
