@@ -1,5 +1,6 @@
 2026-08-13
 
+	* buildscan.sh: Fix meson initialization warning.
 	* build.sh: Fix meson initialization warning.
 	* build.sh, meson.build: Remove test suite execution.
 	* run-tests.sh, run-fuzz.sh: New files.

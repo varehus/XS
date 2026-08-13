@@ -2,6 +2,6 @@
 
 rm -rf buildscan
 mkdir buildscan
-scan-build meson buildscan
+scan-build meson setup buildscan
 cd buildscan
 scan-build --view ninja
