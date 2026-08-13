@@ -1,3 +1,8 @@
+2026-08-13
+
+	* build.sh, meson.build: Remove test suite execution.
+	* run-tests.sh, run-fuzz.sh: New files.
+
 2021-02-02
 
 	I will no longer maintain the XS project.

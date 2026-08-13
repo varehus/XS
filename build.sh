@@ -26,11 +26,4 @@ fi
 touch .build
 [ -d build ] || meson $meson_opts build
 if [ $? -ne 0 ]; then false; else ninja -C build "$@"; fi
-if [ $? -ne 0 ] && [ .build -nt build/.stamp ] \
-		&& [ "$*" != 'fuzz' ] && [ "$*" != 'check' ]; then
-	echo Recreating build/
-	rm -rf build
-	meson $meson_opts build
-	if [ $? -ne 0 ]; then false; else ninja -C build "$@"; fi
-fi
 rm -f .build

@@ -80,11 +80,3 @@ project('xs', ['cpp'])
 		'doc/SYSTEMD_LOCALE', 'doc/TODO', 'doc/TUTORIAL.md',
 		'doc/XS-FOR-LISPERS.md', 'xs.lang'],
 	install_dir: 'share/doc/xs')
-
-run_target('check',
-	command: ['./build/xs', '-c', './tests/xs_tests.xs'],
-	depends: xs)
-
-run_target('fuzz',
-	command: ['./build/xs', '-c', './tests/fuzz.xs'],
-	depends: xs)
