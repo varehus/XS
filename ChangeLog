@@ -1,5 +1,6 @@
 2026-08-13
 
+	* meson.build: Update required Meson version to 1.11.1.
 	* buildscan.sh: Fix meson initialization warning.
 	* build.sh: Fix meson initialization warning.
 	* build.sh, meson.build: Remove test suite execution.

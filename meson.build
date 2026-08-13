@@ -1,21 +1,21 @@
-project('xs', ['cpp'])
+project('xs', ['cpp'],
+  version: '1.3',
+  meson_version: '>= 1.11.1'
+)
   compiler = meson.get_compiler('cpp')
   compile_flags = ['-I../src', '-Wall', '-Wextra']
   link_flags = []
-  boost_dep = dependency('boost', version: '>=1.60')
-  ffi_lib = dependency('ffi', version: '>=6.0.2', required: false)
-  if not ffi_lib.found()
-    ffi_lib = compiler.find_library('ffi')
-  endif
-  gc_lib = dependency('gc', version: '>=1.0.3', required: false)
-  if not gc_lib.found()
-    gc_lib = compiler.find_library('gc')
-  endif
+  boost_dep = dependency('boost', version: '>=1.78')
+  ffi_lib = dependency('libffi', version: '>=3.3', method: 'auto', required: true)
+  gc_lib = dependency('bdw-gc', 'gc', version: '>=8.0.6', method: 'auto', required: true)
   gccpp_lib = compiler.find_library('gccpp')
-  readline_lib = dependency('readline', version: '>=6.3', required: false)
-  if not readline_lib.found()
-    readline_lib = compiler.find_library('readline')
-  endif
+  readline_lib = dependency('readline', version: '>=8.1', method: 'auto', required: true)
+buildinfo_script = find_program('generators/buildinfo.sh')
+git_date_script  = find_program('generators/git_date.sh')
+git_hash_script  = find_program('generators/git_hash.sh')
+git_url_script   = find_program('generators/git_url.sh')
+initial_script   = find_program('generators/initial.sh')
+mksignal_script  = find_program('generators/mksignal.sh')
   custom_target('.stamp',
 	build_always_stale: true,
 	build_by_default: true,
@@ -25,22 +25,22 @@ project('xs', ['cpp'])
 	build_always_stale: true,
 	build_by_default: true,
 	output: 'buildinfo.hxx',
-	command: ['../generators/buildinfo.sh'])
+	command: [buildinfo_script])
   custom_target('git_date.hxx',
 	build_always_stale: true,
 	build_by_default: true,
 	output: 'git_date.hxx',
-	command: ['../generators/git_date.sh'])
+	command: [git_date_script])
   custom_target('git_hash.hxx',
 	build_always_stale: true,
 	build_by_default: true,
 	output: 'git_hash.hxx',
-	command: ['../generators/git_hash.sh'])
+	command: [git_hash_script])
   custom_target('git_url.hxx',
 	build_always_stale: true,
 	build_by_default: true,
 	output: 'git_url.hxx',
-	command: ['../generators/git_url.sh'])
+	command: [git_url_script])
   parse_cxx = custom_target('parse.cxx',
 	depend_files: 'src/parse.yxx',
 	input: ['src/parse.yxx'],
@@ -48,7 +48,7 @@ project('xs', ['cpp'])
 	command: ['bison', '-d', '@INPUT@'])
   sigmsgs_cxx = custom_target('sigmsgs.cxx',
 	output: 'sigmsgs.cxx',
-	command: ['../generators/mksignal.sh', '@OUTPUT@'])
+	command: [mksignal_script, '@OUTPUT@'])
   common_sources = ['src/access.cxx', 'src/closure.cxx', 'src/conv.cxx',
 		'src/eval.cxx', 'src/fd.cxx', 'src/glob.cxx', 'src/glom.cxx',
 		'src/heredoc.cxx', 'src/input.cxx', 'src/list.cxx',
@@ -68,7 +68,7 @@ project('xs', ['cpp'])
 	input: 'src/initial.xs',
 	output: 'initial.cxx',
 	depends: xsdump,
-	command: ['../generators/initial.sh', '@INPUT@', '@OUTPUT@'])
+	command: [initial_script, '@INPUT@', '@OUTPUT@'])
   xs = executable('xs', [initial_cxx, common_sources],
 	cpp_args: compile_flags,
 	link_args: link_flags,
