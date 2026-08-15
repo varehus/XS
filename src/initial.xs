@@ -225,7 +225,7 @@ fn-switch = { |value args| escape { |fn-return|
 }}
 
 # Somewhat like bash's alias, but simpler
-# Create's new method named aliasname which
+# Creates new method named aliasname which
 # calls program with defaultargs first and then
 # other args. Whatis prevents infinite recursion.
 fn-alias = { |aliasname program defaultargs|
@@ -757,7 +757,7 @@ if {~ <=$&primitives execfailure} {fn-%exec-failure = $&execfailure}
 #	interactive or batch.
 #
 #	The REPLs are invoked by the shell's main() routine or the . or
-#	eval builtins.  If the -i flag is used or the shell determimes that
+#	eval builtins.  If the -i flag is used or the shell determines that
 #	it's input is interactive, %interactive-loop is invoked; otherwise
 #	%batch-loop is used.
 #
@@ -772,7 +772,7 @@ if {~ <=$&primitives execfailure} {fn-%exec-failure = $&execfailure}
 #	By convention, the REPL must pass commands to the fn %dispatch,
 #	which has the actual responsibility for executing the command.
 #	Whatever routine invokes the REPL (internal, for now) has
-#	the resposibility of setting up fn %dispatch appropriately;
+#	the responsibility of setting up fn %dispatch appropriately;
 #	it is used for implementing the -e, -n, and -x options.
 #	Typically, fn %dispatch is locally bound.
 #

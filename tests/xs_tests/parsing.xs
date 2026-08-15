@@ -57,7 +57,7 @@ run 'Equals at beginning of word is literal' {
 }
 conds { match 'e =f' }
 
-run 'Free-standing equals incorectly placed fails' {
+run 'Free-standing equals incorrectly placed fails' {
 	$XS -c 'echo g = h'
 }
 conds expect-failure

@@ -153,7 +153,7 @@ These all use the new comparison function %cmp, which in turn uses
 the primitive comparison function &cmp.
 
 Added a builtin printf. This is implemented by the primitive &printf
-and requires the ffi library. The underlying implemention is printf(3),
+and requires the ffi library. The underlying implementation is printf(3),
 but the xs wrapper limits access to printf(3p) functionality without
 length modifiers. This addition requires the ffi library.
 
@@ -327,7 +327,7 @@ leverages off of the pattern matching es already does.  For example:
      foo c bar h
      ; 
 
-A stripped-down $&read primtive has been added.  The %read builtin
+A stripped-down $&read primitive has been added.  The %read builtin
 returns either the empty list (in the case of end-of-file) or a single
 element string with up to one line of data read from standard input
 (including possible redirections).  %read reads one character at a
@@ -349,7 +349,7 @@ changing catch to call the exception handling function without catching
 the return exception.
 
 The for loop now only catches the break exception in its body, not the
-definitons.  The old behavior was silly.
+definitions.  The old behavior was silly.
 
 The '=' character is now allowed in variables if PROTECT_ENV is on.
 
@@ -372,7 +372,7 @@ limit now prints all its results on standard output instead of
 standard error.
 
 Assignment returns the values that were assigned, so multiple
-assignment statments to the same value can be chained with
+assignment statements to the same value can be chained with
 
 	x = <={ y = <={ z = foo bar } }
 
@@ -735,7 +735,7 @@ faster, it uses less memory (because many data structures no longer
 live in garbage collector space, which requires 2 copies of all data
 when collecting), and garbage collects faster (much less data has to
 be scanned).  this code may be less portable than the version that
-preceeded it, so let us know, especially if esdump panics.
+preceded it, so let us know, especially if esdump panics.
 
 some definitions from var.c were pulled out into the new var.h header file.
 
@@ -746,7 +746,7 @@ several crashing bugs (a spurious assertion failure in the splitting code
 following a control-c and an incorrect use of nprint("%L") in the top-level
 error catcher) were fixed.
 
-a new hook fn %cdpathsearch, analagous to %pathsearch, was added for cd.
+a new hook fn %cdpathsearch, analogous to %pathsearch, was added for cd.
 
 a new builtin, access, which is similar to test from other shells, was added.
 the name is different because the semantics are somewhat different.  access is
@@ -984,7 +984,7 @@ send us mail, and we will try to make things work better in the
 next release.  we're getting to a point where out-of-the-box
 portability is important.
 
-the path searching machinery is now available (and replacable)
+the path searching machinery is now available (and replaceable)
 through the hook %whatis.  for example,
 	path-cache =
 	local (whatis = <>{%whatis %whatis})
@@ -1048,7 +1048,7 @@ conditional use of "sig_atomic_t", for non-ANSI environments
 conditional use of Reiser-cpp semantics for token pasting and
 string-izing
 
-fix for gc foward() of a vector (this fixes most, if not all,
+fix for gc forward() of a vector (this fixes most, if not all,
 of the crashes that were reported)
 
 added GCDEBUG support for sun memory protection (via valloc & mprotect)

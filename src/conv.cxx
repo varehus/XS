@@ -236,7 +236,7 @@ static void enclose(Format *f, Binding *binding, const char *sep) {
 	}
 }
 
-/* TODO: investigate/eliminte #if 0'd oode */
+/* TODO: investigate/eliminate #if 0'd oode */
 
 #if 0
 typedef struct Chain Chain;

@@ -7,7 +7,7 @@ public:
 	va_list args;
 	long flags, f1, f2;
 	int invoker;
-    /* for the buffer maintainence routines */
+    /* for the buffer maintenance routines */
 	virtual void put(char c)=0;
 	int flushed;
 	virtual void append(const char *s, size_t len)=0;

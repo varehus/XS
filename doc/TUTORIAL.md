@@ -409,7 +409,7 @@ l = (a b c
      d e f)
 ```
 
-Remember, too, that `xs` lists are flat (that is: alway a list; never
+Remember, too, that `xs` lists are flat (that is: always a list; never
 a tree) and that empty lists "disappear" as a component of a list. The
 following are equivalent:
 
@@ -525,7 +525,7 @@ There's also `~~`, the pattern extraction operator, used like this:
 
 The <subject\> is matched against <pattern\>s; only the portions of
 <subject\> that match wilcards in <pattern\>s are returned as the value of
-`~~`. When <subject\> is a list, the result is the concatentation of all
+`~~`. When <subject\> is a list, the result is the concatenation of all
 <pattern\> matches for the first list item, then the second, and so on.
 
 Globbing is handy, but it can't handle the cases where you'd like to

@@ -1,3 +1,11 @@
+2026-08-15
+
+	* doc/CHANGES, doc/TUTORIAL.md: Fixed typos.
+	* generators/mksignal.sh: Fixed typo.
+	* man/xs.1: Fixed typo.
+	* src/conv.cxx, src/glom.cxx, src/initial.xs, src/print.hxx: Fixed typos.
+	* tests/xs_tests/parsing.xs: Fixed typo.
+
 2026-08-13
 
 	* meson.build: Update required Meson version to 1.11.1.

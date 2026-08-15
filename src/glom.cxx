@@ -10,7 +10,7 @@ using boost::lexical_cast;
 
 static List *calculate(Tree *, Binding *);
 
-/* concat -- cartesion cross product concatenation */
+/* concat -- Cartesian cross product concatenation */
 static List *concat(List* list1,List* list2) {
 	List* result = NULL;
 	List **p = &result;
@@ -64,7 +64,7 @@ static const char *qcat(const char* q1,
 #define DUAL_ITERATE(list, quote) \
         for(; list != NULL; list = list->next, quote = quote->next)
 
-/* qconcat -- cartesion cross product concatenation; also produces a quote list */
+/* qconcat -- Cartesian cross product concatenation; also produces a quote list */
 static List *qconcat(List* list1, List* list2,
 		     StrList* ql1, StrList* ql2, 
 		     StrList **quotep) 
