@@ -1,3 +1,10 @@
+2026-08-24
+
+	* man/xs.1: Delete entry for newpgrp.
+	* src/prim-sys.cxx: Use standard POSIX setpgid.
+	* src/initial.xs: Remove newpgrp function.
+	* src/stdenv.hxx: Remove hacks.
+
 2026-08-15
 
 	* doc/CHANGES, doc/TUTORIAL.md: Fixed typos.

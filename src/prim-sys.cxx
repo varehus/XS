@@ -14,34 +14,11 @@
 
 #include <math.h>
 
-PRIM(newpgrp) {
-	(void)binding;
-	(void)evalflags;
-	int pid;
-	if (list != NULL)
-		fail("$&newpgrp", "usage: $&newpgrp");
-	pid = getpid();
-	setpgrp(pid, pid);
-#ifdef TIOCSPGRP
-	{
-		Sigeffect sigtstp = esignal(SIGTSTP, sig_ignore);
-		Sigeffect sigttin = esignal(SIGTTIN, sig_ignore);
-		Sigeffect sigttou = esignal(SIGTTOU, sig_ignore);
-		ioctl(2, TIOCSPGRP, &pid);
-		esignal(SIGTSTP, sigtstp);
-		esignal(SIGTTIN, sigttin);
-		esignal(SIGTTOU, sigttou);
-	}
-#endif
-	return ltrue;
-}
-
 PRIM(background) {
 	(void)binding;
 	int pid = efork(true, true);
 	if (pid == 0) {
-		/* job control safe version: put it in a new pgroup. */
-		setpgrp(0, getpid());
+		setpgid(0, getpid());
 		mvfd(eopen("/dev/null", oOpen), 0);
 		exit(exitstatus(eval(list, NULL, evalflags | eval_inchild)));
 	}
@@ -356,7 +333,6 @@ PRIM(pause) {
 }
 
 extern void initprims_sys(Prim_dict& primdict) {
-	X(newpgrp);
 	X(background);
 	X(umask);
 	X(cd);

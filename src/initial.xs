@@ -62,7 +62,6 @@ fn-echo		= $&echo
 fn-exec		= $&exec
 fn-forever	= $&forever
 fn-fork		= $&fork
-fn-newpgrp	= $&newpgrp
 fn-pause	= $&pause
 fn-read		= $&read
 fn-result	= $&result
