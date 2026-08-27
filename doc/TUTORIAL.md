@@ -252,7 +252,7 @@ Here are two more things you can do with lists:
 a b c d e f g h i j
 ```
 
-$#<name\> returns the number of items in a list. $^<name\> returns a
+`$#<name>` returns the number of items in a list. `$^<name>` returns a
 one-element list composed of all the items in the original list,
 separated with spaces. Let's make that a bit more clear:
 
