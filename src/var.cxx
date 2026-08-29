@@ -241,7 +241,7 @@ extern List *listvars(bool internal) {
 							varlist);
 	}
 	
-	return (varlist = sortlist(varlist));
+	return sortlist(varlist);
 }
 
 /* hidevariables -- mark all variables as internal */

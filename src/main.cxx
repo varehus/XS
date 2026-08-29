@@ -142,6 +142,8 @@ int main(int argc, char **argv) {
 		argc = 1;
 		argv = reinterpret_cast<char**>(ealloc(2 * sizeof (char *)));
 		argv[0] = strdup("xs");
+		if (argv[0] == NULL)
+			exit(1);
 		argv[1] = NULL;
 	}
 	if (argv[0][0] == '-')

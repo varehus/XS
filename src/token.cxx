@@ -136,7 +136,7 @@ static bool getfds(int fd[2], int c, int default0, int default1) {
 		n = n * 10 + c;
 	fd[0] = n;
 
-	switch (c += '0') {
+	switch (c + '0') {
 	case '=':
 		if ((unsigned int) (n = GETC() - '0') > 9) {
 			if (n != ']' - '0') {

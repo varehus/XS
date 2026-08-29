@@ -166,7 +166,7 @@ static int pipefork(int p[2], int *extra) {
 }
 
 REDIR(here) {
-	int pid, p[2];
+	int p[2];
 	List *doc, *tail, **tailp;
 
 	assert(list != NULL);
@@ -175,7 +175,7 @@ REDIR(here) {
 	doc = (list == tail) ? NULL : list;
 	*tailp = NULL;
 
-	if ((pid = pipefork(p, NULL)) == 0) {	/* child that writes to pipe */
+	if (pipefork(p, NULL) == 0) {	/* child that writes to pipe */
 		try {
 			close(p[0]);
 			fprint(p[1], "%L", doc, "");
@@ -210,8 +210,11 @@ PRIM(pipe) {
 	if ((n % 3) != 1)
 		fail("$&pipe", "usage: $&pipe cmd [ outfd infd cmd ] ...");
 	n = (n + 2) / 3;
-	if (n > pidmax) {
-		pids = reinterpret_cast<int*>(erealloc(pids, n * sizeof *pids));
+	if (n > pidmax || pids == NULL) {
+		size_t num_elements = (n > pidmax ? n : pidmax + 1);
+		pids = reinterpret_cast<int*>(
+			erealloc(pids, num_elements * sizeof *pids)
+		);
 		pidmax = n;
 	}
 	n = 0;

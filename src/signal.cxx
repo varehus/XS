@@ -69,7 +69,7 @@ static void catcher(int sig) {
 	signal(sig, catcher);
 	if (hasforked)
 		/* exit unconditionally on a signal in a child process */
-		exit(1);
+		_exit(1);
 	/* We bypass the xs signal mechanism for SIGWINCH; there's nothing
 	   xs needs to know about this signal and terminal_size() is safe
 	   to call. */
@@ -266,7 +266,7 @@ extern void sigchk(void) {
 		return;
 	if (hasforked)
 		/* exit unconditionally on a signal in a child process */
-		exit(1);
+		_exit(1);
 
 	for (sig = 0;; sig++) {
 		if (sig < NSIG && caught[sig] != 0) {

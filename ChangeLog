@@ -1,3 +1,8 @@
+2026-08-29
+
+	* src/input.cxx, src/main.cxx, src/prim-io.cxx: Static analysis warnings.
+	* src/signal.cxx, src/token.cxx, src/var.cxx: Static analysis warnings.
+
 2026-08-27
 
 	* INSTALL: Update library dependency versions.

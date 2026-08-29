@@ -442,10 +442,14 @@ static char ** get_completions(const char *text, int start, int end) {
 	assert (result_p == results_size - 1);
 	int num_results = results_size - 2;
 
-	if (num_results > 0) {
+	if (num_results > 0 && results != NULL) {
 		results[results_size - 1] = NULL;
-		results[0] = strdup(num_results == 1 ? results[1] : text) ;
-	} else assert (results == NULL);
+		results[0] = strdup(
+            num_results == 1 ? results[1] : text
+        );
+	} else {
+        assert(results == NULL);
+    }
 	return results;
 }
 
