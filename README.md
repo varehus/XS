@@ -24,4 +24,6 @@ This is `xs 1.3`; see `doc/CHANGES`.
 
 The package includes extensive documentation. Sample scripts to define
 library functions, tools and utilities are found in
-[https://github.com/TieDyedDevil/XS-library.git](https://github.com/TieDyedDevil/XS-library.git)  .
+[https://github.com/TieDyedDevil/XS-library.git](https://github.com/TieDyedDevil/XS-library.git).
+The snapshot at [https://github.com/vaerksted/XS.git](https://github.com/vaerksted/XS.git)
+includes `samples/_xsrc.d/annotate.xs` as referenced in [doc/PROJECTS](doc/PROJECTS).
